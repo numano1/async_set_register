@@ -92,7 +92,7 @@ done`
 #Does not track dependencies from scala source
 \$(VERILOGPATH)/%.v : %.scala  
 	\$(eval package:=\$(basename \$(notdir \$@)))
-	\$(eval class:=\$(basename \$(notdir \$@)))
+	\$(eval class:=\$(basename \$(notdir \$@))_inst)
 	\$(eval testbenchfile:=\$(dir \$<)tb_\$(notdir \$<))
 	\$(SBT) 'runMain \$(package).\$(class) -td \$(VERILOGPATH)' 
 	@#Test if testbech generator exists and compile it

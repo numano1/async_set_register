@@ -4,49 +4,73 @@
 // Inititally written by dsp-blocks initmodule.sh, 20190913
 package async_set_register
 
-import chisel3.experimental._
 import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 import dsptools.{DspTester, DspTesterOptionsManager, DspTesterOptions}
-import dsptools.numbers._
-import breeze.math.Complex
+class async_set_register(val n : Int=8 ) extends BlackBox(Map("n"->n)) with HasBlackBoxInline {
+        val io = IO(new Bundle{
+            val D = Input(UInt(n.W))
+            val Q = Output(UInt(n.W))
+            val clock = Input(Clock())
+            val set = Input(Bool())
+        }
+    )
 
-class async_set_register_io[T <:Data](proto: T,n: Int)
-   extends Bundle {
-        val A       = Input(Vec(n,proto))
-        val B       = Output(Vec(n,proto))
-        override def cloneType = (new async_set_register_io(proto.cloneType,n)).asInstanceOf[this.type]
-   }
+setInline("async_set_register.v",
+    s"""
+    |module async_set_register (
+      |    input  [n-1:0] D,
+      |    output  [n-1:0] Q,
+      |    input clock,
+      |    input set
+      |);
+      |always @(posedge clk or posedge set) begin
+      |    if(set) begin
+      |      Q <= n'h1;
+      |    end else begin
+      |      Q <= D;
+      |    end
+      |end
+      |endmodule
+    """.stripMargin)
 
-class async_set_register[T <:Data] (proto: T,n: Int) extends Module {
-    val io = IO(new async_set_register_io( proto=proto, n=n))
-    val register=RegInit(VecInit(Seq.fill(n)(0.U.asTypeOf(proto.cloneType))))
-    register:=io.A
-    io.B:=register
 }
 
-//This gives you verilog
-object async_set_register extends App {
-    chisel3.Driver.execute(args, () => new async_set_register(
-        proto=DspComplex(UInt(16.W),UInt(16.W)), n=8)
+class async_set_register_inst(val n : Int=8 ) extends Module {
+        val io = IO(new Bundle { 
+            val D = Input(UInt(n.W))
+            val Q = Output(UInt(n.W))
+            val clock = Input(Clock())
+            val set = Input(Bool())
+        }
     )
+
+    val reg=Module(new async_set_register).io
+    reg.D:=io.D
+    io.Q:=reg.Q
+    reg.clock:=clock
+    reg.set:=io.set
+}
+//This gives you verilog
+object async_set_register_inst extends App { 
+    chisel3.Driver.execute(args, () => new async_set_register_inst(n=8)) 
 }
 
 //This is a simple unit tester for demonstration purposes
-class unit_tester(c: async_set_register[DspComplex[UInt]] ) extends DspTester(c) {
+class unit_tester(c: async_set_register_inst ) extends DspTester(c) {
 //Tests are here 
-    poke(c.io.A(0).real, 5)
-    poke(c.io.A(0).imag, 102)
+    poke(c.io.D, 5)
     step(5)
     fixTolLSBs.withValue(1) {
-        expect(c.io.B(0).real, 5)
-        expect(c.io.B(0).imag, 102)
+        expect(c.io.Q, 5)
     }
 }
 
-//This is the test driver 
+////This is the test driver 
 object unit_test extends App {
-    iotesters.Driver.execute(args, () => new async_set_register(
-            proto=DspComplex(UInt(16.W),UInt(16.W)), n=8
+    iotesters.Driver.execute(args, () => new async_set_register_inst(
+            n=8
         )
     ){
             c=>new unit_tester(c)
