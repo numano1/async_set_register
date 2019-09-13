@@ -19,7 +19,7 @@ class async_set_register(val n : Int=8 ) extends BlackBox(Map("n"->n)) with HasB
 
 setInline("async_set_register.v",
     s"""
-    |module async_set_register (
+    |module async_set_register #( n=8 ) (
       |    input  [n-1:0] D,
       |    output  [n-1:0] Q,
       |    input clock,
@@ -58,21 +58,21 @@ object async_set_register_inst extends App {
 }
 
 //This is a simple unit tester for demonstration purposes
-class unit_tester(c: async_set_register_inst ) extends DspTester(c) {
-//Tests are here 
-    poke(c.io.D, 5)
-    step(5)
-    fixTolLSBs.withValue(1) {
-        expect(c.io.Q, 5)
-    }
-}
-
-////This is the test driver 
-object unit_test extends App {
-    iotesters.Driver.execute(args, () => new async_set_register_inst(
-            n=8
-        )
-    ){
-            c=>new unit_tester(c)
-    }
-}
+//class unit_tester(c: async_set_register_inst ) extends DspTester(c) {
+////Tests are here 
+//    poke(c.io.D, 5)
+//    step(5)
+//    fixTolLSBs.withValue(1) {
+//        expect(c.io.Q, 5)
+//    }
+//}
+//
+//////This is the test driver 
+//object unit_test extends App {
+//    iotesters.Driver.execute(args, () => new async_set_register_inst(
+//            n=8
+//        )
+//    ){
+//            c=>new unit_tester(c)
+//    }
+//}
