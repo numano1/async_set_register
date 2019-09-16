@@ -17,22 +17,27 @@ class async_set_register(val n : Int=8 ) extends BlackBox(Map("n"->n)) with HasB
         }
     )
 
-setInline("async_set_register.v",
-    s"""
-    |module async_set_register #( n=8 ) (
-      |    input  [n-1:0] D,
-      |    output  [n-1:0] Q,
-      |    input clock,
-      |    input set
-      |);
-      |always @(posedge clock or posedge set) begin
-      |    if(set) begin
-      |      Q <= n'h1;
-      |    end else begin
-      |      Q <= D;
-      |    end
-      |end
-      |endmodule
+    setInline("async_set_register.v",
+        s"""
+        |module async_set_register #( n=8 ) (
+        |    input  [n-1:0] D,
+        |    output  [n-1:0] Q,
+        |    input clock,
+        |    input set
+        |);
+        |reg [n-1:0] _Q;
+        |always @(posedge clock or posedge set) begin
+        |    if(set == 1) 
+        |    begin
+        |      _Q <= {n{1'b1}};
+        |    end 
+        |    else 
+        |    begin
+        |      _Q <= D;
+        |    end
+        |end
+        |assign Q = _Q;
+        |endmodule
     """.stripMargin)
 
 }
