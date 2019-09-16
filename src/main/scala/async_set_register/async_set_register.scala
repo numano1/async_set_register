@@ -25,7 +25,7 @@ setInline("async_set_register.v",
       |    input clock,
       |    input set
       |);
-      |always @(posedge clk or posedge set) begin
+      |always @(posedge clock or posedge set) begin
       |    if(set) begin
       |      Q <= n'h1;
       |    end else begin
