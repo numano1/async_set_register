@@ -1,0 +1,11 @@
+*.swp
+*~
+Makefile
+test_run_dir/
+target/
+verilog/
+project/
+
+modelsim/transcript
+modelsim/work/
+modelsim/vsim.wlf
