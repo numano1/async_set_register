@@ -7,6 +7,7 @@ package async_set_register
 import chisel3._
 import chisel3.experimental._
 import chisel3.util._
+import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 import dsptools.{DspTester, DspTesterOptionsManager, DspTesterOptions}
 class async_set_register(val n : Int=8 ) extends BlackBox(Map("n"->n)) with HasBlackBoxInline {
         val io = IO(new Bundle{
@@ -58,8 +59,10 @@ class async_set_register_inst(val n : Int=8 ) extends Module {
     reg.set:=io.set
 }
 //This gives you verilog
-object async_set_register_inst extends App { 
-    chisel3.Driver.execute(args, () => new async_set_register_inst(n=8)) 
+object async_set_register_inst extends App {
+  (new ChiselStage).execute(args, Seq(
+    ChiselGeneratorAnnotation(() => new async_set_register_inst(n=8))
+  ))
 }
 
 //This is a simple unit tester for demonstration purposes
