@@ -5,9 +5,9 @@
 package async_set_register
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
+import chisel3.experimental._
+import chisel3.stage.{ChiselStage, ChiselGeneratorAnnotation}
 import dsptools.{DspTester, DspTesterOptionsManager, DspTesterOptions}
 class async_set_register(val n : Int=8 ) extends BlackBox(Map("n"->n)) with HasBlackBoxInline {
         val io = IO(new Bundle{

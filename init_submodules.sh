@@ -2,6 +2,8 @@
 #Init submodules in this dir, if any
 DIR="$( cd "$( dirname $0 )" && pwd )"
 git submodule update --init
+sbt publishLocal
+cd ${DIR}
 
 #Publish local the ones you need
 #cd $DIR/clkdiv_n_2_4_8
